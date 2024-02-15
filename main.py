@@ -1,6 +1,6 @@
-
 from pynput.mouse import Listener, Button
 import pyautogui as pg
+
 
 Coord = tuple[int, int]
 
@@ -10,8 +10,8 @@ def get_coords() -> list[int]:
   
   def on_click(x, y, button, pressed) -> Coord:  
     if not pressed and button == Button.left:
-      print("TopLeft" if len(coords) == 2 else "BottomRight", 
-            f"is ({x}, {y})")
+      # print("TopLeft" if len(coords) == 0 else "BottomRight", 
+      #       f"is ({x}, {y})")
       coords.append(x)
       coords.append(y)
     
@@ -24,4 +24,11 @@ def get_coords() -> list[int]:
   return coords
 
 
-pg.screenshot('sudoku.png', region=get_coords())
+def take_screenshot(region: tuple[int, int, int, int]):
+  # print(x1, y1, x2, y2)
+  # region: left, top, width, height
+  pg.screenshot('sudoku.png', region=region)
+  
+  
+x1, y1, x2, y2 = get_coords()
+take_screenshot(x1, y1, x2-x1, y2-y1)
