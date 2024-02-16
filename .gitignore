@@ -1,2 +1,4 @@
 venv
 sudoku.png
+sudoku_gen.png
+__pycache__
