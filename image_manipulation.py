@@ -16,10 +16,12 @@ def thresholding(img: MatLike) -> MatLike:
   # Make the image with gray scale
   gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
  
+  ret2,th2 = cv.threshold(gray,0,255,cv.THRESH_BINARY+cv.THRESH_OTSU)
+ 
   # Otsu's thresholding after Gaussian filtering
   blur = cv.GaussianBlur(gray,(5,5),0)
   _, th3 = cv.threshold(blur,0,255,cv.THRESH_BINARY+cv.THRESH_OTSU)
-  return th3
+  return th2
 
 
 def resize(img: MatLike) -> MatLike:
