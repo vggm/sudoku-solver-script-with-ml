@@ -2,3 +2,5 @@ venv
 sudoku.png
 sudoku_gen.png
 __pycache__
+cells
+test*
