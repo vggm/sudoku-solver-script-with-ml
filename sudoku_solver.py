@@ -1,7 +1,7 @@
 from time import perf_counter
+from copy import deepcopy
 
 Sudoku = list[list[int]]
-
 
 class SudokuSolver:
   
@@ -14,37 +14,37 @@ class SudokuSolver:
   def valid(self, sudoku) -> bool:
     # check rows
     for row in sudoku:
-      nums = [0] * 10
+      visited = [False] * 10
       for n in row:
         if n == 0:
           continue
-        if nums[n] != 0:
+        if visited[n]:
           return False
-        nums[n] = 1
+        visited[n] = True
     
     # check cols
     t_sudoku = list(zip(*sudoku))
     for col in t_sudoku:
-      nums = [0] * 10
+      visited = [False] * 10
       for n in col:
         if n == 0:
           continue
-        if nums[n] != 0:
+        if visited[n]:
           return False
-        nums[n] = 1
+        visited[n] = True
     
     # check boxes
     for I in range(3):
       for J in range(3):
-        nums = [0] * 10
+        visited = [False] * 10
         for i in range(3*I, 3*I+3):
           for j in range(3*J, 3*J+3):
             n = sudoku[i][j]
             if n == 0:
               continue
-            if nums[n] != 0:
+            if visited[n]:
               return False
-            nums[n] = 1
+            visited[n] = True
     
     return True
   
@@ -67,8 +67,7 @@ class SudokuSolver:
     
     for i in range(bi*3, bi*3+3):
       for j in range(bj*3, bj*3+3):
-        n = self.sudoku[i][j]
-        if n == opt:
+        if self.sudoku[i][j] == opt:
           return False
     
     return True
@@ -89,8 +88,8 @@ class SudokuSolver:
           self.sudoku[i][j] = opt
           if self.backtracking(e+1):
             return True
+      self.sudoku[i][j] = 0
         
-    self.sudoku[i][j] = 0
     return False
     
   
@@ -99,7 +98,7 @@ class SudokuSolver:
       self.msg_error = 'Sudoku Invalid'
       return None, -1
 
-    self.sudoku = sudoku
+    self.sudoku = deepcopy(sudoku)
     self.msg_error = ''
 
     start = perf_counter()
