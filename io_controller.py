@@ -58,6 +58,7 @@ class IOController:
       coords = self.last_coords
     
     pg.MINIMUM_DURATION = 0
+    pause = False
     
     tl, br = coords # topleft, bottomright
     
@@ -70,6 +71,6 @@ class IOController:
       for j in range(9):
         if sudoku_input[i][j] == 0:
           # pg.moveTo(x + j*cell_width + cell_width//2, y + i*cell_height + cell_height//2)
-          pg.click(x + j*cell_width + cell_width//2, y + i*cell_height + cell_height//2, _pause=False)
-          pg.press('num%d' % sudoku_solved[i][j], _pause=False)
+          pg.click(x + j*cell_width + cell_width//2, y + i*cell_height + cell_height//2, _pause=pause)
+          pg.press('num%d' % sudoku_solved[i][j], _pause=pause)
           # sleep(1)
