@@ -3,9 +3,9 @@ from PIL.Image import Image
 import numpy as np
 import cv2 as cv
 
-
 # CELL SIZE
 WIDTH = HEIGHT = 30 # pixels
+CELL_SIZE = (WIDTH, HEIGHT)
 
 
 def convert_PIL_to_Matlike(pil_img: Image) -> MatLike:
@@ -95,9 +95,9 @@ def separate_cell_boxes(img: MatLike) -> list[np.ndarray]:
 def sudoku_to_cells(pil_img: Image):
   img = convert_PIL_to_Matlike(pil_img)
   thresholded = thresholding(img)
-  # cv.imwrite('test_threshold.png', thresholded)
-  removed_cell_edges = remove_cell_edges(thresholded)
+  cv.imwrite('test_threshold.png', thresholded)
+  # removed_cell_edges = remove_cell_edges(thresholded)
   # cv.imwrite('test_removed_edges.png', removed_cell_edges)
-  resized_img = resize(removed_cell_edges)
-  # cv.imwrite('test_resized.png', resized_img)
+  resized_img = resize(thresholded)
+  cv.imwrite('test_resized.png', resized_img)
   return separate_cell_boxes(resized_img)
