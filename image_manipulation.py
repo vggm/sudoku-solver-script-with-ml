@@ -4,7 +4,7 @@ import numpy as np
 import cv2 as cv
 
 # CELL SIZE
-WIDTH = HEIGHT = 30 # pixels
+WIDTH = HEIGHT = 20 # pixels
 CELL_SIZE = (WIDTH, HEIGHT)
 
 
