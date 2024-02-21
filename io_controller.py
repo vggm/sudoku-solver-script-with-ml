@@ -45,7 +45,8 @@ class IOController:
     Returns:
         Image: screenshot
     """
-    return pg.screenshot(filename, region=region)
+    # return pg.screenshot(filename, region=region)
+    return pg.screenshot(filename)
 
 
   def take_screenshot(self, filename: str) -> Image:

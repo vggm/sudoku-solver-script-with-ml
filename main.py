@@ -9,7 +9,7 @@ if __name__ == '__main__':
   
   img = ioc.take_screenshot('sudoku.png')
   cells = sudoku_to_cells(img)
-  
+  exit(1)
   sudoku = build_sudoku_matrix(cells)
   for row in sudoku:
     print(*row)

@@ -1,10 +1,11 @@
 from cv2.typing import MatLike
 from PIL.Image import Image
+from matplotlib import pyplot as plt
 import numpy as np
 import cv2 as cv
 
 # CELL SIZE
-WIDTH = HEIGHT = 30 # pixels
+WIDTH = HEIGHT = 50 # pixels
 CELL_SIZE = (WIDTH, HEIGHT)
 
 
@@ -15,19 +16,58 @@ def convert_PIL_to_Matlike(pil_img: Image) -> MatLike:
   return open_cv_image
 
 
+def filter(contour: MatLike) -> bool:
+  topleft = None
+  for row in contour:
+    for coord in row:
+      topleft = coord
+      break
+  
+  (x1, y1) = topleft
+  
+  return (x1 > 1 and y1 > 300)
+
+
+def max_contour(img: MatLike, thresh: MatLike) -> tuple[int, int, int, int]:
+  contours, _ = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+  
+  max_cont = None
+  max_area = 0
+  for cont in contours:
+    if cv.contourArea(cont) > max_area and filter(cont):
+      max_cont = cont
+      max_area = cv.contourArea(cont)
+  
+  
+  # img_cont = cv.drawContours(img, [max_cont], -1, (0,255,0), 2, cv.LINE_AA)
+  # plt.imshow(cv.cvtColor(img_cont, cv.COLOR_BGR2RGB))
+  # plt.show()
+  
+  topleft = [99999, 99999]
+  bottomright = [0, 0]
+  for coord in max_cont:
+    x, y = coord[0]
+    topleft[0] = min(topleft[0], x)
+    topleft[1] = min(topleft[1], y)
+    bottomright[0] = max(bottomright[0], x)
+    bottomright[1] = max(bottomright[1], y)
+  
+  return topleft[0]+2, topleft[1]+2, bottomright[0] - topleft[0]-2, bottomright[1] - topleft[1]-2
+
+
 def thresholding(img: MatLike) -> MatLike:
   
   # Make the image with gray scale
   gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
   
-  # ret1,th1 = cv.threshold(img,127,255,cv.THRESH_BINARY)
+  ret1,th1 = cv.threshold(gray,127,255,cv.THRESH_BINARY)
  
   # ret2,th2 = cv.threshold(gray,0,255,cv.THRESH_BINARY+cv.THRESH_OTSU)
  
   # Otsu's thresholding after Gaussian filtering
-  blur = cv.GaussianBlur(gray,(5,5),0)
-  _, th3 = cv.threshold(blur,0,255,cv.THRESH_BINARY+cv.THRESH_OTSU)
-  return th3
+  # blur = cv.GaussianBlur(gray,(5,5),0)
+  # _, th3 = cv.threshold(blur,0,255,cv.THRESH_BINARY+cv.THRESH_OTSU)
+  return th1
 
 
 def resize(img: MatLike) -> MatLike:
@@ -98,6 +138,8 @@ def sudoku_to_cells(pil_img: Image):
   cv.imwrite('test_threshold.png', thresholded)
   # removed_cell_edges = remove_cell_edges(thresholded)
   # cv.imwrite('test_removed_edges.png', removed_cell_edges)
-  resized_img = resize(thresholded)
+  cropped = crop_image(*max_contour(img, thresholded), thresholded)
+  cv.imwrite('test_cropped.png', cropped)
+  resized_img = resize(cropped)
   cv.imwrite('test_resized.png', resized_img)
   return separate_cell_boxes(resized_img)
