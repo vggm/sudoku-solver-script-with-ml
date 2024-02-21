@@ -20,7 +20,6 @@ if __name__ == '__main__':
     for row in res:
       print(*row)
     print(f'Time {time*1000:.2f}ms')
-    
     ioc.complete_sudoku(None, sudoku, res)
   else:
     print(sudoku_solver.msg_error)
