@@ -127,7 +127,7 @@ def separate_cell_boxes(img: MatLike) -> list[np.ndarray]:
   for i in range(9):
     for j in range(9):
       cell = crop_image(j*WIDTH, i*HEIGHT, WIDTH, HEIGHT, img)
-      cv.imwrite(path % (i, j), cell)
+      # cv.imwrite(path % (i, j), cell)
       cells.append(cell)
   
   return cells
@@ -136,12 +136,12 @@ def separate_cell_boxes(img: MatLike) -> list[np.ndarray]:
 def sudoku_to_cells(pil_img: Image) -> tuple[SudokuDimension, list[np.ndarray]]:
   img = convert_PIL_to_Matlike(pil_img)
   thresholded = thresholding(img)
-  cv.imwrite('test_threshold.png', thresholded)
+  # cv.imwrite('test_threshold.png', thresholded)
   x, y, width, height = max_contour(img, thresholded)
   cropped = crop_image(x, y, width, height, thresholded)
-  cv.imwrite('test_cropped.png', cropped)
+  # cv.imwrite('test_cropped.png', cropped)
   resized_img = resize(cropped)
-  cv.imwrite('test_resized.png', resized_img)
+  # cv.imwrite('test_resized.png', resized_img)
   final_img = remove_edges(resized_img)
-  cv.imwrite('test_final.png', final_img)
+  # cv.imwrite('test_final.png', final_img)
   return (x, y, width, height), separate_cell_boxes(resized_img)

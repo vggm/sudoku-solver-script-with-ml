@@ -49,8 +49,9 @@ class IOController:
   
   
   def total_screenshot(self, filename: str) -> Image:
-    return pg.screenshot(filename)
-    
+    if filename is None:
+      return pg.screenshot()
+    return pg.screenshot(filename)  
 
 
   def take_screenshot(self, filename: str) -> Image:
@@ -58,7 +59,7 @@ class IOController:
     return self.screenshot(filename, (x1, y1, x2-x1, y2-y1))
   
   
-  def take_total_screenshot(self, filename: str) -> Image:
+  def take_total_screenshot(self, filename: str | None) -> Image:
     self.get_coords()
     return self.total_screenshot(filename)
 

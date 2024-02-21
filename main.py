@@ -8,7 +8,7 @@ def main() -> None:
   sudoku_solver = SudokuSolver()
   ioc = IOController()
   
-  img = ioc.take_total_screenshot('sudoku.png')
+  img = ioc.take_total_screenshot(None)
   (x, y, width, height), cells = sudoku_to_cells(img)
   
   topleft = x, y

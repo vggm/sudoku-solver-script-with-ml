@@ -4,3 +4,6 @@ sudoku_gen.png
 __pycache__
 cells
 test*
+dist
+build
+main.spec
