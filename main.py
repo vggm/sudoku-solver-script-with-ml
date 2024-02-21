@@ -3,7 +3,8 @@ from sudoku_builder import build_sudoku_matrix
 from sudoku_solver import SudokuSolver
 from io_controller import IOController
 
-if __name__ == '__main__':
+
+def main() -> None:
   sudoku_solver = SudokuSolver()
   ioc = IOController()
   
@@ -26,3 +27,7 @@ if __name__ == '__main__':
     ioc.complete_sudoku((topleft, bottomright), sudoku, res)
   else:
     print(sudoku_solver.msg_error)
+
+
+if __name__ == '__main__':
+  main()
