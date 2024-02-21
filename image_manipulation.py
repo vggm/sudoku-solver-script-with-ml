@@ -8,6 +8,8 @@ import cv2 as cv
 WIDTH = HEIGHT = 50 # pixels
 CELL_SIZE = (WIDTH, HEIGHT)
 
+SudokuDimension = tuple[int, int, int, int]
+
 
 def convert_PIL_to_Matlike(pil_img: Image) -> MatLike:
   open_cv_image = np.array(pil_img)
@@ -31,21 +33,24 @@ def filter(contour: MatLike) -> bool:
 def max_contour(img: MatLike, thresh: MatLike) -> tuple[int, int, int, int]:
   contours, _ = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
   
-  max_cont = None
-  max_area = 0
+  # img_cont1 = cv.drawContours(img, contours, -1, (0,255,0), 2, cv.LINE_AA)
+  # plt.imshow(cv.cvtColor(img_cont1, cv.COLOR_BGR2RGB))
+  # plt.show()
+  
+  squads = []
   for cont in contours:
-    if cv.contourArea(cont) > max_area and filter(cont):
-      max_cont = cont
-      max_area = cv.contourArea(cont)
+    if filter(cont):
+      squads.append(cont)
   
-  
-  # img_cont = cv.drawContours(img, [max_cont], -1, (0,255,0), 2, cv.LINE_AA)
-  # plt.imshow(cv.cvtColor(img_cont, cv.COLOR_BGR2RGB))
+  max_squad = sorted(squads, key=cv.contourArea, reverse=True)[0]
+    
+  # img_cont2 = cv.drawContours(img, [max_squad], -1, (0,0,255), 2, cv.LINE_AA)
+  # plt.imshow(cv.cvtColor(img_cont2, cv.COLOR_BGR2RGB))
   # plt.show()
   
   topleft = [99999, 99999]
   bottomright = [0, 0]
-  for coord in max_cont:
+  for coord in max_squad:
     x, y = coord[0]
     topleft[0] = min(topleft[0], x)
     topleft[1] = min(topleft[1], y)
@@ -60,7 +65,7 @@ def thresholding(img: MatLike) -> MatLike:
   # Make the image with gray scale
   gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
   
-  ret1,th1 = cv.threshold(gray,127,255,cv.THRESH_BINARY)
+  ret1,th1 = cv.threshold(gray,100,255,cv.THRESH_BINARY)
  
   # ret2,th2 = cv.threshold(gray,0,255,cv.THRESH_BINARY+cv.THRESH_OTSU)
  
@@ -72,36 +77,32 @@ def thresholding(img: MatLike) -> MatLike:
 
 def resize(img: MatLike) -> MatLike:
   return cv.resize(img,(9*HEIGHT, 9*WIDTH), interpolation = cv.INTER_AREA)
-  
 
-def remove_cell_edges(img: MatLike) -> MatLike:
-  bgr = cv.cvtColor(img, cv.COLOR_GRAY2BGR)
-  # bgr = img
-  # gray = cv.cvtColor(img,cv.COLOR_BGR2GRAY)
-  edges = cv.Canny(img,50,150,apertureSize = 3)
-  lines = cv.HoughLines(edges,1,np.pi/180,100)
-  for line in lines:
-      rho,theta = line[0]
-      a = np.cos(theta)
-      b = np.sin(theta)
-      x0 = a*rho
-      y0 = b*rho
-      x1 = int(x0 + 1000*(-b))
-      y1 = int(y0 + 1000*(a))
-      x2 = int(x0 - 1000*(-b))
-      y2 = int(y0 - 1000*(a))
-      cv.line(bgr,(x1,y1),(x2,y2),(0,0,255),2)
-  # cv.imwrite('test_redline.png', bgr)
-  # Convert BGR to HSV
-  hsv = cv.cvtColor(bgr, cv.COLOR_BGR2HSV)
-  # define range of red color in HSV
-  lower_red = np.array([0, 50, 50])
-  upper_red = np.array([10, 255, 255])
-  # Threshold the HSV image to get only red colors
-  mask = cv.inRange(hsv, lower_red, upper_red)
-  # Bitwise-AND mask and original image
-  bgr[mask != 0] = [255,255,255]
-  return cv.cvtColor(bgr, cv.COLOR_BGRA2GRAY)
+
+def remove_edges(img: MatLike) -> MatLike:
+  sudoku_lateral_length = HEIGHT * 9
+  h = sudoku_lateral_length // 3
+  
+  color = (255, 255, 255)
+  thickness = 4
+  
+  start = [0, 0]
+  end = [0, WIDTH*9]
+    
+  for _ in range(4):
+    img = cv.line(img, start, end, color, thickness)
+    start[0] += h
+    end[0] += h
+    
+  start = [0, 0]
+  end = [WIDTH*9, 0]
+    
+  for _ in range(4):
+    img = cv.line(img, start, end, color, thickness)
+    start[1] += h
+    end[1] += h
+  
+  return img
 
 
 def crop_image(x: int, y: int, width: int, height: int, img: MatLike) -> MatLike:
@@ -132,14 +133,15 @@ def separate_cell_boxes(img: MatLike) -> list[np.ndarray]:
   return cells
 
 
-def sudoku_to_cells(pil_img: Image):
+def sudoku_to_cells(pil_img: Image) -> tuple[SudokuDimension, list[np.ndarray]]:
   img = convert_PIL_to_Matlike(pil_img)
   thresholded = thresholding(img)
   cv.imwrite('test_threshold.png', thresholded)
-  # removed_cell_edges = remove_cell_edges(thresholded)
-  # cv.imwrite('test_removed_edges.png', removed_cell_edges)
-  cropped = crop_image(*max_contour(img, thresholded), thresholded)
+  x, y, width, height = max_contour(img, thresholded)
+  cropped = crop_image(x, y, width, height, thresholded)
   cv.imwrite('test_cropped.png', cropped)
   resized_img = resize(cropped)
   cv.imwrite('test_resized.png', resized_img)
-  return separate_cell_boxes(resized_img)
+  final_img = remove_edges(resized_img)
+  cv.imwrite('test_final.png', final_img)
+  return (x, y, width, height), separate_cell_boxes(resized_img)

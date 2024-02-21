@@ -5,7 +5,7 @@ import numpy as np
 
 def import_model():
   filterwarnings('ignore', category=UserWarning)
-  return jl.load('new_new_model.joblib')
+  return jl.load('new_model.joblib')
 
 
 def image_to_number(img: np.ndarray, model) -> int:  

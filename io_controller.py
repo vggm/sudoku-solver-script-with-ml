@@ -45,13 +45,22 @@ class IOController:
     Returns:
         Image: screenshot
     """
-    # return pg.screenshot(filename, region=region)
+    return pg.screenshot(filename, region=region)
+  
+  
+  def total_screenshot(self, filename: str) -> Image:
     return pg.screenshot(filename)
+    
 
 
   def take_screenshot(self, filename: str) -> Image:
     (x1, y1), (x2, y2) = self.get_coords()
     return self.screenshot(filename, (x1, y1, x2-x1, y2-y1))
+  
+  
+  def take_total_screenshot(self, filename: str) -> Image:
+    self.get_coords()
+    return self.total_screenshot(filename)
 
 
   def complete_sudoku(self, coords: list[Coord, Coord], sudoku_input: Sudoku, sudoku_solved: Sudoku):
