@@ -33,7 +33,7 @@ pip install scikit-learn joblib numpy pandas matplotlib pynput pyautogui opencv-
 ``` 
 
  > [!TIP]
- > I pretty recommend use a virtual environment, running the next command in the directory of the project:
+ > I highly recommend use a virtual environment, running the next command in the directory of the project:
 
 ```powershell
 py -m venv "venv" 
