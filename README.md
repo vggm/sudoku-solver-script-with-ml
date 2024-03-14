@@ -39,10 +39,18 @@ pip install scikit-learn joblib numpy pandas matplotlib pynput pyautogui opencv-
 py -m venv "venv" 
 ```
 
-And activate the venv (for Window):
+And then, activate the venv:
+
+**Windows**
 
 ```
 .\venv\Scripts\activate
+```
+
+**Linux**
+
+```
+source .\venv\bin\activate
 ```
 
 With all done, just run the main file and you will have to click twice (not double-click necessary) when the [sudoku.com](sudoku.com) page is on the screen (recommended on full screen and it's not necessary to do both clicks on the page, just the second one):
