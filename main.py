@@ -4,6 +4,11 @@ from sudoku_solver import SudokuSolver
 from io_controller import IOController
 
 
+def print_matrix(matrix: list[list[int]]) -> None:
+  for row in matrix:
+    print(*row)
+
+
 def main() -> None:
   sudoku_solver = SudokuSolver()
   ioc = IOController()
@@ -15,16 +20,16 @@ def main() -> None:
   bottomright = x+width, y+height
 
   sudoku = build_sudoku_matrix(cells)
+  
   for row in sudoku:
     print(*row)
   print()
   
-  res, time = sudoku_solver.solve(sudoku)
-  if res is not None:
-    for row in res:
-      print(*row)
+  result, time = sudoku_solver.solve(sudoku)
+  if result is not None:
+    print_matrix(result)
     print(f'Time {time*1000:.2f}ms')
-    ioc.complete_sudoku((topleft, bottomright), sudoku, res)
+    ioc.complete_sudoku((topleft, bottomright), sudoku, result)
   else:
     print(sudoku_solver.msg_error)
 

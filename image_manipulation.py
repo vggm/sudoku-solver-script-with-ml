@@ -127,7 +127,7 @@ def separate_cell_boxes(img: MatLike) -> list[np.ndarray]:
   for i in range(9):
     for j in range(9):
       cell = crop_image(j*WIDTH, i*HEIGHT, WIDTH, HEIGHT, img)
-      # cv.imwrite(path % (i, j), cell)
+      cv.imwrite(path % (i, j), cell)
       cells.append(cell)
   
   return cells
